@@ -1,0 +1,15 @@
+/* Light Theme (default) */
+:root {
+  --color-primary: 67 56 202;       /* indigo-600 */
+  --color-secondary: 236 72 153;    /* pink-500 */
+  --color-card-bg: 255 255 255;     /* white */
+  --radius-card: 16px;
+  --radius-btn: 10px;
+}
+
+/* Dark Theme */
+.dark {
+  --color-primary: 129 140 248;     /* indigo-400 */
+  --color-secondary: 244 114 182;   /* pink-400 */
+  --color-card-bg: 23 23 23;        /* zinc-900 */
+}
