@@ -92,10 +92,10 @@
             />
           </svg>
           <span
-            v-if="cart.length"
+            v-if="cart.items.length"
             class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
           >
-            {{ cart.length }}
+            {{ cart.items.length }}
           </span>
         </button>
 
@@ -238,13 +238,13 @@
 
           <!-- Cart Items -->
           <div class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-            <div v-if="!cart.length" class="text-center text-gray-400 py-20">
+            <div v-if="!cart.items.length" class="text-center text-gray-400 py-20">
               Your cart is empty
             </div>
 
             <ul role="list" class="space-y-4">
               <li
-                v-for="item in cart"
+                v-for="item in cart.items"
                 :key="item.cartItemId"
                 class="flex items-center gap-4 p-3 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition"
               >
@@ -253,7 +253,7 @@
                 >
                   <img
                     :src="
-                      item.imageUrl ||
+                      item.product.imageUrl ||
                       'https://via.placeholder.com/150?text=No+Image'
                     "
                     @error="
@@ -269,7 +269,7 @@
                   <div>
                     <div class="flex justify-between font-medium text-gray-900">
                       <h3>
-                        <a href="#">{{ item.name }}</a>
+                        <a href="#">{{ item.product.name }}</a>
                       </h3>
                       <p>₹{{ item.price }}</p>
                     </div>
@@ -278,22 +278,22 @@
                     </p>
                   </div>
                   <div class="flex justify-between items-center mt-2 text-sm">
-                    <p class="text-gray-500">Qty {{ item.qty }}</p>
                     <div class="flex gap-2">
                       <button
-                        @click="decrementItem(item.cartItemId)"
+                        @click="decrementItem(item.id)"
                         class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 transition"
                       >
                         -
                       </button>
+                      <p class="text-gray-500 mt-1"> {{ item.quantity }}</p>
                       <button
-                        @click="incrementItem(item.cartItemId)"
+                        @click="incrementItem(item.id)"
                         class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300 transition"
                       >
                         +
                       </button>
                       <button
-                        @click="deleteCartItem(item.cartItemId)"
+                        @click="deleteCartItem(item.id)"
                         class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition"
                       >
                         Remove
@@ -311,7 +311,7 @@
           >
             <div class="flex justify-between font-medium text-gray-900 text-lg">
               <span>Subtotal</span>
-              <span>₹{{ cartTotal }}</span>
+              <span>₹{{ cart.total }}</span>
             </div>
             <p class="mt-1 text-sm text-gray-500">
               Shipping and taxes calculated at checkout.
@@ -325,7 +325,7 @@
             </button>
 
             <button
-              @click="cartOpen = false"
+              @click="shopping"
               class="w-full mt-2 py-3 text-indigo-600 font-medium rounded-lg border border-indigo-600 hover:bg-indigo-50 transition"
             >
               Continue Shopping &rarr;
@@ -362,12 +362,14 @@ const incrementItem = (id: string) => store.incrementItem(id);
 const decrementItem = (id: string) => store.decrementItem(id);
 const deleteCartItem = (id: string) => store.deleteCartItem(id);
 const checkoutCart = async () => {
-  //if (!store.cartId) return;
-  //await store.checkout(store.cartId);
   cartOpen.value = false;
     await nextTick()                  // wait for UI close animation
 
   router.push('/cart')              // navigate to cart page
+};
+const shopping = async () => {
+  cartOpen.value = false;
+  router.push('/')              // navigate to cart page
 };
 
 // Fetch categories + initialize cart

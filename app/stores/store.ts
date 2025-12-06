@@ -36,9 +36,8 @@ export const useStore = defineStore("store", {
   state: () => ({
     products: [] as Product[],
     categories: [] as any[],
-    cart: [] as CartItem[],
+    cart: {items:[]},
     cartId: null as string | null,
-
     pagination: {
       page: 1,
       take: 20,
@@ -224,19 +223,22 @@ export const useStore = defineStore("store", {
       this.loading = true;
       try {
         const res = await $bucksbox.store.cart.add(data);
+        console.log(res);
         if (res.statusCode !== "00") throw new Error(res.message);
 
-        const items = res.data.items;
+        const items = res;
 
-        this.cart = items.map((ci: any) => ({
-          cartItemId: ci.id,
-          itemId: ci.itemId,
-          productId: ci.productId,
-          name: ci.item?.product?.name,
-          price: ci.price,
-          qty: ci.quantity,
-          total: ci.total,
-        }));
+        // this.cart = items.map((ci: any) => ({
+        //   cartItemId: ci.id,
+        //   itemId: ci.itemId,
+        //   productId: ci.productId,
+        //   name: ci.item?.product?.name,
+        //   price: ci.price,
+        //   qty: ci.quantity,
+        //   total: ci.total,
+        // }));
+
+        this.cart= items.cart
 
         return res.data;
       } catch (err: any) {
@@ -251,20 +253,14 @@ export const useStore = defineStore("store", {
      * --------------------------------------------- */
     async incrementItem(cartItemId: string) {
       const { $bucksbox } = useNuxtApp();
+      console.log(cartItemId)
 
       try {
-        const res = await $bucksbox.store.cart.increment({
-          cartId: this.cartId,
-          itemId: cartItemId,
-        });
+        const res = await $bucksbox.store.cart.increment(cartItemId);
 
         if (res.statusCode !== "00") throw new Error(res.message);
 
-        const item = this.cart.find((i) => i.cartItemId === cartItemId);
-        if (item) {
-          item.qty++;
-          item.total = item.qty * item.price;
-        }
+        this.cart= res.cart
       } catch (err: any) {
         this.error = err.message;
       }
@@ -277,23 +273,10 @@ export const useStore = defineStore("store", {
       const { $bucksbox } = useNuxtApp();
 
       try {
-        const res = await $bucksbox.store.cart.decrement({
-          cartId: this.cartId,
-          itemId: cartItemId,
-        });
-
+        const res = await $bucksbox.store.cart.decrement(cartItemId);
+        //console.log(res)
         if (res.statusCode !== "00") throw new Error(res.message);
-
-        const item = this.cart.find((i) => i.cartItemId === cartItemId);
-
-        if (item) {
-          item.qty--;
-          item.total = item.qty * item.price;
-
-          if (item.qty <= 0) {
-            this.cart = this.cart.filter((i) => i.cartItemId !== cartItemId);
-          }
-        }
+        this.cart= res.cart
       } catch (err: any) {
         this.error = err.message;
       }
@@ -306,12 +289,9 @@ export const useStore = defineStore("store", {
       const { $bucksbox } = useNuxtApp();
 
       try {
-        await $bucksbox.store.cart.deleteItem({
-          cartId: this.cartId,
-          itemId: cartItemId,
-        });
-
-        this.cart = this.cart.filter((i) => i.cartItemId !== cartItemId);
+        let res =await $bucksbox.store.cart.deleteItem(cartItemId);
+        if (res.statusCode !== "00") throw new Error(res.message);
+        this.cart= res.cart
       } catch (err: any) {
         this.error = err.message;
       }
