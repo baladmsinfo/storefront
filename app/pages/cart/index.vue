@@ -1,12 +1,10 @@
 <template>
   <div class="max-w-7xl md:py-10 mx-auto">
     <CartsCart2
-      :items="store.cart"
-      :totals="totals"
-
+      :cart="store.cart"
       @remove="remove"
-      @updateQty="updateQty"
-      @updateSize="updateSize"
+      @incrementItem="incrementItem"
+      @decrementItem="decrementItem"
       @applyPromo="applyPromo"
     />
   </div>
@@ -28,6 +26,7 @@ const totals = computed(() => {
   );
 
   return {
+    subtotal: subtotal,
     discount: 0,
     shipping: 2,
     tax: 4,
@@ -39,20 +38,15 @@ const totals = computed(() => {
   HANDLE REMOVE
 ------------------------------*/
 const remove = async (item) => {
-  await store.deleteCartItem(item.cartItemId);
+  await store.deleteCartItem(item);
 };
 
-/* -----------------------------
-  HANDLE QTY UPDATE
-------------------------------*/
-const updateQty = async ({ item, type }) => {
-  if (type === "inc") {
-    await store.incrementItem(item.cartItemId);
-  } else if (type === "dec") {
-    if (item.qty > 1) {
-      await store.decrementItem(item.cartItemId);
-    }
-  }
+const incrementItem = async (item) => {
+  await store.incrementItem(item);
+};
+
+const decrementItem = async (item) => {
+    await store.decrementItem(item);
 };
 
 /* -----------------------------
@@ -70,6 +64,4 @@ const applyPromo = (code) => {
   console.log("Promo code:", code);
 };
 </script>
-<style scoped>
-/* Optional component-level CSS */
-</style>
+
