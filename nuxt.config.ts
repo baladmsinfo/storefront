@@ -14,7 +14,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       bucksboxPublicKey: process.env.BUCKSBOX_PUBLIC_KEY || "",
-      STORE_BASE_URL: process.env.BUCKSBOX_BASE_URL || "http://localhost:3012",
+      STORE_BASE_URL: process.env.BUCKSBOX_BASE_URL || "http://localhost:8080/api",
     },
   },
   vite: {
