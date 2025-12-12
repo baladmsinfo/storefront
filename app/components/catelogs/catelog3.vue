@@ -64,6 +64,8 @@
 </template>
 
 <script setup>
+import VariantDialog from "~/components/products/variantDialog.vue";
+
 defineProps({
   title: { type: String, default: "Hot list" },
   subtitle: {
@@ -82,6 +84,8 @@ defineProps({
 const dialog = reactive({ open: false, product: null });
 
 const openVariantDialog = (product) => {
+  console.log("openVariantDialog", product);
+  
   dialog.open = true;
   dialog.product = product;
 };

@@ -34,9 +34,10 @@ export interface Pagination {
 // ---------------------
 export const useStore = defineStore("store", {
   state: () => ({
+    me: null as any,
     products: [] as Product[],
     categories: [] as any[],
-    cart: {items:[]},
+    cart: { items: [] },
     cartId: null as string | null,
     pagination: {
       page: 1,
@@ -116,6 +117,25 @@ export const useStore = defineStore("store", {
       }
     },
 
+    async fetchMe() {
+      const { $bucksbox } = useNuxtApp();
+
+      this.loading = true;
+      try {
+        const res = await $bucksbox.store.profile.me();
+
+        if (res.statusCode !== "00") throw new Error(res.message);
+        this.me = res.data;
+        console.log("this.me -", res);
+        
+        return res;
+      } catch (err: any) {
+        this.error = err.message;
+      } finally {
+        this.loading = false;
+      }
+    },
+
 
     /* ---------------------------------------------
      * CATEGORY LIST + 10 PRODUCTS PER CATEGORY
@@ -152,16 +172,46 @@ export const useStore = defineStore("store", {
      * --------------------------------------------- */
     async initializeCart(payload: any = {}) {
       const { $bucksbox } = useNuxtApp();
-
       this.loading = true;
 
       try {
+        // -----------------------------------------
+        // 1. Check localStorage for existing cartId
+        // -----------------------------------------
+        if (process.client) {
+          const existingId = localStorage.getItem("currentCartId");
+
+          if (existingId) {
+            // Try using existing cart
+            const loaded = await this.getCart(existingId);
+
+            console.log("Loaded existing cart:", this.cartId, this.cart);
+            
+            if (loaded) {
+              // Successfully loaded existing cart
+              return loaded;
+            }
+
+            // If cart is invalid, remove and create a new one
+            localStorage.removeItem("currentCartId");
+          }
+        }
+
+        // -----------------------------------------
+        // 2. Initialize new cart
+        // -----------------------------------------
         const res = await $bucksbox.store.cart.initialize(payload);
         if (res.statusCode !== "00") throw new Error(res.message);
 
         const cart = res.data.cart;
         this.cartId = cart.id;
 
+        // Save new cart ID
+        if (process.client) {
+          localStorage.setItem("currentCartId", cart.id);
+        }
+
+        // Map cart items
         this.cart = cart.items.map((ci: any) => ({
           cartItemId: ci.id,
           itemId: ci.itemId,
@@ -173,9 +223,10 @@ export const useStore = defineStore("store", {
         }));
 
         return res.data;
+
       } catch (err: any) {
-        console.log(err);
         this.error = err.message;
+
       } finally {
         this.loading = false;
       }
@@ -190,21 +241,15 @@ export const useStore = defineStore("store", {
       this.loading = true;
 
       try {
-        const res = await $bucksbox.store.cart.get({ cartId });
+        
+        const res = await $bucksbox.store.cart.get( cartId );
+
         if (res.statusCode !== "00") throw new Error(res.message);
 
         const cart = res.data;
         this.cartId = cart.id;
 
-        this.cart = cart.items.map((ci: any) => ({
-          cartItemId: ci.id,
-          itemId: ci.itemId,
-          productId: ci.productId,
-          name: ci.item?.product?.name,
-          price: ci.price,
-          qty: ci.quantity,
-          total: ci.total,
-        }));
+        this.cart = cart;
 
         return res.data;
       } catch (err: any) {
@@ -238,7 +283,7 @@ export const useStore = defineStore("store", {
         //   total: ci.total,
         // }));
 
-        this.cart= items.cart
+        this.cart = items.cart
 
         return res.data;
       } catch (err: any) {
@@ -260,7 +305,7 @@ export const useStore = defineStore("store", {
 
         if (res.statusCode !== "00") throw new Error(res.message);
 
-        this.cart= res.cart
+        this.cart = res.cart
       } catch (err: any) {
         this.error = err.message;
       }
@@ -276,7 +321,7 @@ export const useStore = defineStore("store", {
         const res = await $bucksbox.store.cart.decrement(cartItemId);
         //console.log(res)
         if (res.statusCode !== "00") throw new Error(res.message);
-        this.cart= res.cart
+        this.cart = res.cart
       } catch (err: any) {
         this.error = err.message;
       }
@@ -289,9 +334,9 @@ export const useStore = defineStore("store", {
       const { $bucksbox } = useNuxtApp();
 
       try {
-        let res =await $bucksbox.store.cart.deleteItem(cartItemId);
+        let res = await $bucksbox.store.cart.deleteItem(cartItemId);
         if (res.statusCode !== "00") throw new Error(res.message);
-        this.cart= res.cart
+        this.cart = res.cart
       } catch (err: any) {
         this.error = err.message;
       }
@@ -319,17 +364,22 @@ export const useStore = defineStore("store", {
     /* ---------------------------------------------
      * CHECKOUT
      * --------------------------------------------- */
-    async checkout(cartId: string) {
+    async checkout(payload: any) {
       const { $bucksbox } = useNuxtApp();
 
       try {
-        const res = await $bucksbox.store.checkout.process({ cartId });
+        const res = await $bucksbox.store.checkout.process(payload);
+
+        console.log(res);
+        
         if (res.statusCode !== "00") throw new Error(res.message);
 
         this.cart = [];
         this.cartId = null;
 
-        return res.data;
+        localStorage.removeItem("currentCartId");
+
+        return res;
       } catch (err: any) {
         this.error = err.message;
       }

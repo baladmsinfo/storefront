@@ -18,8 +18,17 @@ watchEffect(() => {
   }
 });
 
+useHead({
+  link: [
+    {
+      rel: "stylesheet",
+      href: "https://fonts.googleapis.com/css2?family=Creepster&family=Cinzel+Decorative:wght@400;700&family=Orbitron:wght@400;700&display=swap"
+    }
+  ]
+});
 
 </script>
+
 
 <style>
 .fade-enter-active, .fade-leave-active {
