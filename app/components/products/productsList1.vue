@@ -46,7 +46,7 @@
 
       <!-- Price -->
       <p class="mt-2 font-bold text-gray-900 text-lg">
-        ₹{{ product.items?.[0]?.price || 0 }}
+        {{ $formatPrice(product.items?.[0]?.price) || 0 }}
       </p>
     </div>
 
@@ -63,6 +63,8 @@
 </template>
 
 <script setup>
+const { $formatPrice } = useNuxtApp();
+
 const props = defineProps({
   products: Array,
   fallbackImage: { type: String, default: "https://via.placeholder.com/300?text=No+Image" },

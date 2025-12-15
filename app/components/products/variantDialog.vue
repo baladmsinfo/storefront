@@ -36,11 +36,11 @@
                 {{ item.variantName || item.sku }}
               </p>
               <p class="text-purple-700 font-extrabold text-xl">
-                ₹{{ item.price }}
+                {{ $formatPrice(item.price) }}
               </p>
             </div>
             <p>
-              MRP: <strike>₹{{ item.MRP }}</strike> ₹{{ item.price }}
+              MRP: <strike>{{ $formatPrice(item.MRP) }}</strike> {{ $formatPrice(item.price) }}
             </p>
             <p v-if="item.stock === 0" class="text-red-600 font-semibold">
               Out of Stock
@@ -77,6 +77,8 @@
 <script setup>
 import { ref, watch } from "vue";
 import { useStore } from "@/stores/store";
+
+const { $formatPrice } = useNuxtApp();
 
 const props = defineProps({
   open: Boolean,

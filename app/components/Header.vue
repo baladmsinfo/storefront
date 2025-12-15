@@ -36,6 +36,9 @@
 
       <!-- Desktop Navigation -->
       <nav class="hidden lg:flex items-center gap-6 text-[15px] font-medium">
+        
+        <a href="/" class="text-gray-600 hover:text-black transition">Home</a>
+
         <div class="relative">
           <button @mouseenter="megaOpen = true" @mouseleave="megaOpen = false"
             class="hover:text-black text-gray-700 flex items-center gap-1 transition">
@@ -49,12 +52,13 @@
               class="absolute left-1/2 -translate-x-1/2 top-12 bg-white shadow-xl rounded-xl p-8 w-[950px] border border-gray-100 max-h-[600px] overflow-y-auto">
               <div class="grid grid-cols-4 gap-8">
                 <div v-for="category in categories" :key="category.id">
-                  <h4 class="font-semibold text-gray-900 mb-4">
+                  <h4 class="font-semibold text-gray-900 mb-4 cursor-pointer hover:text-indigo-600 transition"
+                    @click="goToList(category.id)">
                     {{ category.name }}
                   </h4>
                   <ul class="space-y-3">
-                    <li v-for="child in category.children" :key="child.id"
-                      class="text-gray-600 hover:text-black cursor-pointer text-sm transition">
+                    <li v-for="child in category.children" :key="child.id" @click="goToList(category.id)"
+                      class="text-gray-600 hover:text-indigo-600 cursor-pointer text-sm transition">
                       {{ child.name }}
                     </li>
                   </ul>
@@ -68,10 +72,6 @@
             </div>
           </transition>
         </div>
-
-        <a href="#" class="text-gray-600 hover:text-black transition">Offers</a>
-        <a href="#" class="text-gray-600 hover:text-black transition">Women</a>
-        <a href="#" class="text-gray-600 hover:text-black transition">Blog</a>
       </nav>
 
       <!-- Right: Buttons -->
@@ -89,10 +89,10 @@
         </button>
 
         <!-- Desktop CTA -->
-        <button
+        <!-- <button
           class="hidden lg:block bg-black text-white px-5 py-2.5 rounded-full font-medium hover:bg-gray-900 transition">
           Login
-        </button>
+        </button> -->
 
         <!-- Mobile Menu Toggle -->
         <button class="lg:hidden" @click="toggleMenu">
@@ -120,6 +120,9 @@
 
           <!-- Mobile Menu Items -->
           <div class="mt-8 space-y-6">
+
+            <a href="/" class="block text-gray-700 text-[15px] font-medium border-b pb-3">Home</a>
+            
             <div>
               <button @click="mobileMegaOpen = !mobileMegaOpen"
                 class="w-full flex justify-between items-center py-3 border-b font-medium text-gray-700">
@@ -130,27 +133,24 @@
               <transition name="expand">
                 <div v-if="mobileMegaOpen" class="pl-3 py-2 space-y-4">
                   <div v-for="category in categories" :key="category.id">
-                    <h4 class="font-semibold text-gray-900 mb-2">
-                      {{ category.name }}
-                    </h4>
-                    <ul class="space-y-2 border-l pl-4">
-                      <li v-for="child in category.children" :key="child.id"
-                        class="text-gray-600 hover:text-black text-sm">
-                        {{ child.name }}
-                      </li>
-                    </ul>
+                    <h4 class="font-semibold text-gray-900 mb-4 cursor-pointer hover:text-indigo-600 transition"
+                    @click="goToList(category.id)">
+                    {{ category.name }}
+                  </h4>
+                  <ul class="space-y-3">
+                    <li v-for="child in category.children" :key="child.id" @click="goToList(category.id)"
+                      class="text-gray-600 hover:text-indigo-600 cursor-pointer text-sm transition">
+                      {{ child.name }}
+                    </li>
+                  </ul>
                   </div>
                 </div>
               </transition>
             </div>
 
-            <a class="block text-gray-700 text-[15px] font-medium border-b pb-3">Offers</a>
-            <a class="block text-gray-700 text-[15px] font-medium border-b pb-3">Women</a>
-            <a class="block text-gray-700 text-[15px] font-medium border-b pb-3">Blog</a>
-
-            <button class="w-full bg-black text-white py-3 rounded-full font-medium mt-6 hover:bg-gray-900 transition">
+            <!-- <button class="w-full bg-black text-white py-3 rounded-full font-medium mt-6 hover:bg-gray-900 transition">
               Get Started
-            </button>
+            </button> -->
           </div>
         </div>
       </div>
@@ -195,7 +195,7 @@
                       <h3>
                         <a href="#">{{ item.product?.name }}</a>
                       </h3>
-                      <p>₹{{ item.price }}</p>
+                      <p>{{ $formatPrice(item.price) }}</p>
                     </div>
                     <p class="text-sm text-gray-500">
                       {{ item.variant || "Default" }}
@@ -227,7 +227,7 @@
           <div class="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
             <div class="flex justify-between font-medium text-gray-900 text-lg">
               <span>Subtotal</span>
-              <span>₹{{ cart.total }}</span>
+              <span>{{ $formatPrice(cart.total) }}</span>
             </div>
             <p class="mt-1 text-sm text-gray-500">
               Shipping and taxes calculated at checkout.
@@ -257,9 +257,11 @@ import { useTenant } from "~/composables/useTenant";
 
 const { tenant } = useTenant();
 
+const { $formatPrice } = useNuxtApp();
+
 const shortName = computed(() => {
   const name = tenant?.value?.data?.name || "";
-  return name.split(" ")[0]; // text before first space
+  return name.split(" ")[0]; 
 });
 
 const fullName = computed(() => {
@@ -302,6 +304,14 @@ const shopping = async () => {
   cartOpen.value = false;
   router.push('/')              // navigate to cart page
 };
+
+const goToList = (id: string | number) => {
+  megaOpen.value = false
+  mobileMegaOpen.value = false
+  menuOpen.value = false
+
+  router.push(`/list/${id}`)
+}
 
 // Fetch categories + initialize cart
 onMounted(async () => {

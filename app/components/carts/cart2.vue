@@ -17,7 +17,7 @@
                   <div>
                     <h3 class="text-sm font-medium text-slate-900">{{ item.product?.name }}</h3>
                     <p class="text-sm text-slate-500 mt-2">{{ item.size || 'Default Size' }}</p>
-                    <h6 class="text-[15px] text-slate-900 font-medium mt-4">${{ item.price.toFixed(2) }}</h6>
+                    <h6 class="text-[15px] text-slate-900 font-medium mt-4">{{ $formatPrice(item.price) }}</h6>
                   </div>
 
                   <!-- REMOVE + QUANTITY -->
@@ -54,7 +54,6 @@
                   </div>
                 </div>
               </div>
-
               <hr class="border-gray-300" />
             </div>
 
@@ -62,14 +61,17 @@
             <hr class="border-gray-300 my-6" />
             <div>
               <ul class="text-slate-500 font-medium space-y-4">
-                <li class="flex justify-between text-sm">Subtotal <span class="font-semibold text-slate-900">${{
-                  cart.subtotal }}</span></li>
-                <li class="flex justify-between text-sm">Shipping <span class="font-semibold text-slate-900">${{
-                  cart.shipping }}</span></li>
-                <li class="flex justify-between text-sm">Tax <span class="font-semibold text-slate-900">${{ cart.tax
+                <li class="flex justify-between text-sm">Subtotal <span class="font-semibold text-slate-900">{{
+                  $formatPrice(cart.subtotal) }}</span></li>
+                <li v-if="cart.shipping" class="flex justify-between text-sm">Shipping <span
+                    class="font-semibold text-slate-900">{{
+                      $formatPrice(cart.shipping) }}</span></li>
+                <li v-if="cart.tax" class="flex justify-between text-sm">Tax <span
+                    class="font-semibold text-slate-900">{{ $formatPrice(cart.tax)
                     }}</span></li>
                 <hr class="border-slate-300" />
-                <li class="flex justify-between font-semibold text-[15px]">Total <span>${{ cart.total }}</span></li>
+                <li class="flex justify-between font-semibold text-[15px]">Total <span>{{ $formatPrice(cart.total)
+                    }}</span></li>
               </ul>
             </div>
           </div>
@@ -155,6 +157,7 @@ import { reactive } from "vue";
 import { useStore } from "@/stores/store";
 import { useRouter } from "vue-router";
 
+const { $formatPrice } = useNuxtApp();
 const store = useStore();
 const router = useRouter();
 

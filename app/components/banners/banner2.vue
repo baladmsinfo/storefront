@@ -1,24 +1,35 @@
+<script setup>
+import { computed } from "vue"
+import { useTenant } from "~/composables/useTenant"
+
+const { tenant } = useTenant()
+
+// 🔥 Extract default banner safely
+const defaultBanner = computed(() => {
+  return tenant.value?.data?.banners?.[0] || null
+})
+</script>
+
+
 <template>
   <section
     class="w-full bg-gradient-to-b from-white via-gray-50 border-gray-200 mb-2"
+    v-if="defaultBanner"
   >
     <div
-      class="max-w-screen-xl mx-auto px-6 sm:px-10 lg:px-16 py-12 sm:py-16 lg:py-20 grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
+      class="max-w-screen-xl mx-auto px-6 sm:px-10 lg:px-16 py-12 sm:py-16 lg:py-20
+             grid grid-cols-1 md:grid-cols-2 gap-12 items-center"
     >
       <!-- TEXT AREA -->
       <div class="space-y-6">
         <h1
           class="text-3xl sm:text-5xl font-extrabold leading-tight text-gray-900 tracking-wide"
         >
-          Discover  
-          <span class="bg-gradient-to-r from-gray-700 to-gray-400 bg-clip-text text-transparent">
-            Premium Elegance
-          </span>
+          {{ defaultBanner.title || "Discover Premium Elegance" }}
         </h1>
 
         <p class="text-gray-600 text-lg max-w-md leading-relaxed">
-          Explore exclusive collections crafted with precision, style, and
-          luxury—made for a modern lifestyle.
+          {{ defaultBanner.description }}
         </p>
 
         <button
@@ -29,7 +40,7 @@
         </button>
       </div>
 
-      <!-- IMAGE AREA WITH WHITE GRADIENT -->
+      <!-- IMAGE AREA -->
       <div class="flex justify-center">
         <div
           class="relative w-full max-w-md h-[260px] sm:h-[340px] md:h-[420px]
@@ -37,12 +48,17 @@
                  rounded-2xl flex items-center justify-center overflow-hidden"
         >
           <img
-            src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f"
-            alt="Premium Product"
+            :src="defaultBanner.imageUrl"
+            :alt="defaultBanner.title"
             class="max-w-full max-h-full object-contain drop-shadow-xl"
           />
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- Optional fallback -->
+  <section v-else class="py-20 text-center text-gray-400">
+    Loading banner...
   </section>
 </template>
