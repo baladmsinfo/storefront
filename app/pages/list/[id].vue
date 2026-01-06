@@ -214,7 +214,7 @@ const showFilter = ref(false);
 const selectedCategory = ref(null);
 const selectedSubCategory = ref(null);
 const minPrice = ref(0);
-const maxPrice = ref(50000);
+const maxPrice = ref(null);
 const openCategories = ref([]);
 
 /* PAGINATION / INFINITE SCROLL */
@@ -344,9 +344,9 @@ const isOpen = (catId) => openCategories.value.includes(catId);
 ------------------------- */
 const removeCategoryChip = async () => { selectedCategory.value=null; selectedSubCategory.value=null; await reloadWithFilters(); };
 const removeSubCategoryChip = async () => { selectedSubCategory.value=null; await reloadWithFilters(); };
-const removePriceChip = async () => { minPrice.value=0; maxPrice.value=50000; await reloadWithFilters(); };
-const clearCategoryOnly = async () => { selectedCategory.value=null; selectedSubCategory.value=null; openCategories.value=[]; minPrice.value=0; maxPrice.value=50000; await reloadWithFilters(); };
-const clearFilters = async () => { selectedCategory.value=null; selectedSubCategory.value=null; openCategories.value=[]; minPrice.value=0; maxPrice.value=50000; await reloadWithFilters(); };
+const removePriceChip = async () => { minPrice.value=0; maxPrice.value=null; await reloadWithFilters(); };
+const clearCategoryOnly = async () => { selectedCategory.value=null; selectedSubCategory.value=null; openCategories.value=[]; minPrice.value=0; maxPrice.value=null; await reloadWithFilters(); };
+const clearFilters = async () => { selectedCategory.value=null; selectedSubCategory.value=null; openCategories.value=[]; minPrice.value=0; maxPrice.value=null; await reloadWithFilters(); };
 
 /* -------------------------
    ADD TO CART

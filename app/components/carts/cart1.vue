@@ -48,8 +48,8 @@
                 <button @click="increment(index)" class="text-gray-600 hover:text-gray-900 px-2">+</button>
               </div>
               <div class="text-right">
-                <p class="text-gray-900 font-semibold">${{ (item.price * item.qty).toFixed(2) }}</p>
-                <p class="text-gray-400 text-sm line-through">${{ item.originalPrice }}</p>
+                <p class="text-gray-900 font-semibold">{{ $formatPrice(item.price * item.qty) }}</p>
+                <p class="text-gray-400 text-sm line-through">{{ $formatPrice(item.originalPrice) }}</p>
               </div>
             </div>
           </div>
@@ -61,10 +61,10 @@
         <div class="bg-white rounded-xl shadow p-6 space-y-6 sticky top-0 lg:top-6">
           <h3 class="text-lg font-semibold text-gray-900 border-b pb-2">Order Summary</h3>
           <ul class="space-y-3 text-gray-700 text-sm">
-            <li class="flex justify-between">Subtotal <span class="font-semibold text-gray-900">${{ subtotal.toFixed(2) }}</span></li>
+            <li class="flex justify-between">Subtotal <span class="font-semibold text-gray-900">${{ $formatPrice(subtotal) }}</span></li>
             <li class="flex justify-between">Shipping <span class="font-semibold text-gray-900">$4.00</span></li>
             <li class="flex justify-between">Tax <span class="font-semibold text-gray-900">$4.00</span></li>
-            <li class="flex justify-between font-semibold text-gray-900 border-t pt-2">Total <span>${{ total.toFixed(2) }}</span></li>
+            <li class="flex justify-between font-semibold text-gray-900 border-t pt-2">Total <span>${{ $formatPrice(total) }}</span></li>
           </ul>
 
           <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-md transition">
@@ -94,6 +94,8 @@
 
 <script setup>
 import { reactive, computed, ref } from 'vue';
+
+const { $formatPrice } = useNuxtApp();
 
 const cartItems = reactive([
   { id: 1, name: 'Sweater', size: 'MD', color: 'Black', price: 18.5, originalPrice: 22.5, qty: 1, image: 'https://readymadeui.com/images/black-sweaters-1.webp' },
