@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
   // If tenant is not default, call backend
   if (tenant !== "default") {
-    const data = await $fetch(`http://localhost:3012/api/store/init/${tenant}`);
+    const data = await $fetch(`https://billingbackend.bucksbox.in/api/store/init/${tenant}`);
     return {
       tenant,
       ...data,
