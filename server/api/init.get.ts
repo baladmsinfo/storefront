@@ -2,11 +2,16 @@ export default defineEventHandler(async (event) => {
   const hostHeader = getRequestHeader(event, "host");
   const tenant = event.context.tenant;
 
+  const config = useRuntimeConfig(event)
+  console.log(config.public)
+  
+
   console.log("API request host:", hostHeader, "| Tenant:", tenant);
 
   // If tenant is not default, call backend
   if (tenant !== "default") {
-    const data = await $fetch(`https://billingbackend.bucksbox.in/api/store/init/${tenant}`);
+    const url = config.public.STORE_BASE_URL + `/store/init/${tenant}`
+    const data = await $fetch(url);
     return {
       tenant,
       ...data,
